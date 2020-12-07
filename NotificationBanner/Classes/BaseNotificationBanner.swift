@@ -495,15 +495,15 @@ open class BaseNotificationBanner: UIView {
 
         NotificationCenter.default.post(name: BaseNotificationBanner.BannerWillDisappear, object: self, userInfo: notificationUserInfo)
         delegate?.notificationBannerWillDisappear(self)
-
-        isDisplaying = false
-        remove()
-
+        
         UIView.animate(withDuration: forced ? animationDuration / 2 : animationDuration,
                        animations: {
                         self.frame = self.bannerPositionFrame.startFrame
-        }) { (completed) in
-
+        }) { [weak self] (completed) in
+            guard let `self` = self else { return }
+            
+            self.isDisplaying = false
+            self.remove()
             self.removeFromSuperview()
 
             NotificationCenter.default.post(name: BaseNotificationBanner.BannerDidDisappear, object: self, userInfo: self.notificationUserInfo)
